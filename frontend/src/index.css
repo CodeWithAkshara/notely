@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles for redesigned UI */
+body {
+  background-color: #F4F4F0;
+}
+.dark body {
+  background-color: #0f172a;
+}
+
+/* Utility for rounded 16px if needed */
+.rounded-16 { border-radius: 16px; }
+
+/* Ensure FAB has expected hover */
+.fab-hover:hover { background-color: #6D28D9 !important; }
