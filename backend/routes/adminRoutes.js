@@ -5,7 +5,10 @@ const jwt = require("jsonwebtoken");
 
 const { protect, protectAdmin } = require("../middleware/authMiddleware");
 const { adminOnly } = require("../middleware/adminMiddleware");
-const { generateCsrfToken, verifyAdminCsrf } = require("../middleware/csrfMiddleware");
+const {
+  generateCsrfToken,
+  verifyAdminCsrf,
+} = require("../middleware/csrfMiddleware");
 const User = require("../models/User");
 const Note = require("../models/Note");
 const AppError = require("../utils/AppError");
@@ -31,11 +34,13 @@ router.post("/login", async (req, res, next) => {
     }
 
     // Generate JWT token for admin
-    const token = jwt.sign({ admin: true }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    const token = jwt.sign({ admin: true }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
     const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     };
     res.cookie("jwt", token, cookieOptions);
@@ -45,7 +50,7 @@ router.post("/login", async (req, res, next) => {
     const csrfCookieOptions = {
       httpOnly: false,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
       maxAge: 24 * 60 * 60 * 1000,
     };
     res.cookie("csrf-token", csrfToken, csrfCookieOptions);
@@ -61,13 +66,18 @@ router.post("/login", async (req, res, next) => {
 
 router.get("/csrf-token", protectAdmin, generateCsrfToken);
 
-router.get("/all-notes", protectAdmin, verifyAdminCsrf, async (req, res, next) => {
-  try {
-    const notes = await Note.find().sort({ updatedAt: -1 }).lean();
-    res.json(notes);
-  } catch (error) {
-    next(error);
-  }
-});
+router.get(
+  "/all-notes",
+  protectAdmin,
+  verifyAdminCsrf,
+  async (req, res, next) => {
+    try {
+      const notes = await Note.find().sort({ updatedAt: -1 }).lean();
+      res.json(notes);
+    } catch (error) {
+      next(error);
+    }
+  },
+);
 
 module.exports = router;
