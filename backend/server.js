@@ -15,6 +15,9 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ origin: process.env.CLIENT_ORIGIN, credentials: true }));
 
+app.get("/", (req, res) => {
+  res.send("hello");
+});
 app.get("/api/csrf-token", generateCsrfToken);
 app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
