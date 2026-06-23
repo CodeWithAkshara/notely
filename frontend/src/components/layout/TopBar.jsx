@@ -16,16 +16,11 @@ export default function TopBar({
 }) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const handleLogout = async () => {
     try {
-      await axios.post(
-        
-        
-        { withCredentials: true }
-      );
-
+      await logout();
       navigate('/login');
     } catch (error) {
       console.error(error);

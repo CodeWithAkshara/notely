@@ -7,6 +7,7 @@ import useNotes from '../hooks/useNotes'
 import useCsrf from '../hooks/useCsrf'
 import { theme } from '../utils/theme'
 import api from '../api/axiosInstance'
+import { useAuth } from '../context/AuthContext'
 
 export default function DashboardPage() {
   const [filters, setFilters] = useState({ search: '', status: 'active', color: '', isFavorite: undefined })
@@ -15,6 +16,7 @@ export default function DashboardPage() {
   const [noteToEdit, setNoteToEdit] = useState(null)
   const [users, setUsers] = useState([])
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const { user } = useAuth()
 
   useEffect(() => {
     if (window.innerWidth >= 768) {
@@ -34,17 +36,19 @@ export default function DashboardPage() {
   }, [searchInput])
 
   useEffect(() => {
-  const fetchUsers = async () => {
-    try {
-      const res = await api.get('/admin/users')
-      setUsers(res.data)
-    } catch (err) {
-      console.error(err)
+    const fetchUsers = async () => {
+      try {
+        const res = await api.get('/admin/users')
+        setUsers(res.data)
+      } catch (err) {
+        console.error(err)
+      }
     }
-  }
 
-  fetchUsers()
-}, [])
+    if (user?.role === 'admin') {
+      fetchUsers()
+    }
+  }, [user])
 
   const handleNewNote = () => { setNoteToEdit(null); setIsModalOpen(true) }
   const handleEdit = (note) => { setNoteToEdit(note); setIsModalOpen(true) }
