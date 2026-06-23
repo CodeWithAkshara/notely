@@ -21,8 +21,8 @@ export default function TopBar({
   const handleLogout = async () => {
     try {
       await axios.post(
-        "http://localhost:5000/api/auth/logout",
-        {},
+        
+        
         { withCredentials: true }
       );
 
